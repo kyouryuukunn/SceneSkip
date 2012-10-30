@@ -98,6 +98,7 @@ function scene_getcurlabel(){
 ;選択済色替え,選択記録
 ;@lk target="" text=""
 @macro name=lk
+@eval exp="sf.checkread[scene_getcurlabel()]=1"
 ;バックで戻ってきたときのためにフラグ初期化
 @eval exp="&'f.checklink[\'' + mp.text + '\']=0'"
 @eval exp="mp.storage = kag.conductor.curStorage" cond="mp.storage === void"
