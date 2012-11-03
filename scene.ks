@@ -40,6 +40,7 @@ function scene_getcurlabel(){
 		@eval exp="(Dictionary.assign incontextof scene.temp_f)(f)"
 		@eval exp="scene.temp_f.history = []"
 		@eval exp="scene.temp_f.history.assign(kag.historyOfStore)"
+		@eval exp="scene.temp_f.historyData = kag.historyLayer.save()"
 		@eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(kag.conductor.curLabel.substring(1) + '.scene'), true)"
 	@endif
 @else
@@ -55,6 +56,7 @@ function scene_getcurlabel(){
 		@eval exp="(Dictionary.assign incontextof scene.temp_f)(f)"
 		@eval exp="scene.temp_f.history = []"
 		@eval exp="scene.temp_f.history.assign(kag.historyOfStore)"
+		@eval exp="scene.temp_f.historyData = kag.historyLayer.save()"
 		@eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(kag.conductor.curLabel.substring(1) + '.scene'), true)"
 	@else
 		@eval exp="f.scene_storage=mp.storage, f.scene_target=mp.target"
@@ -103,7 +105,6 @@ function scene_getcurlabel(){
 @eval exp="&'f.checklink[\'' + mp.text + '\']=0'"
 @eval exp="mp.storage = kag.conductor.curStorage" cond="mp.storage === void"
 @locate *
-@MoveCursor * cond="typeof(MoveMouseCursorPlugin_object) != 'undefined'"
 @link * exp="&'sf.checklink[\'' + mp.text + '\']=1, ' + 'f.checklink[\'' + mp.text + '\']=1'"
 @nowait
 @font color=0x666666 cond="sf.checklink[mp.text]==1"
@@ -112,8 +113,13 @@ function scene_getcurlabel(){
 @endnowait
 @endlink
 @r
+;@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
+;	@eval exp="MouseCursorMover.set(%[layer:kag.fore.messages[0], x:mp.x, y:mp.y, time:300, accel:-4])"
+;@else
+@eval exp="kag.current.setFocusToLink(0, true)"
+	;@eval exp="kag.fore.base.cursorX=mp.x, kag.fore.base.cursorY=mp.y"
+;@endif
 @endmacro
-
 
 @return
 
@@ -121,6 +127,13 @@ function scene_getcurlabel(){
 ;シーンスキップ確認画面
 *Question
 @cm
+@iscript
+if(typeof(global.exsystembutton_object) != "undefined" && kag.fore.messages[0].visible)
+	exsystembutton_object.onMessageHiddenStateChanged(true);
+if(typeof(global.MoveMenu_object) != "undefined" && kag.fore.messages[0].visible)
+	tf.move_menuon=0;
+@endscript
+@rclick enabled=false
 @history output=false enabled=true
 @nowait
 @style align=center
@@ -134,7 +147,12 @@ function scene_getcurlabel(){
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=1"]skip[endlink][r]
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=0"]no[endlink][r]
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=2"]back[endlink][r]
-@MoveCursor x="&(kag.scWidth/2 + 20)" y=360 cond="typeof(MoveMouseCursorPlugin_object) != 'undefined'"
+;@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
+;	@MoveCursor x="&(kag.scWidth/2)" y=360
+;@else
+@eval exp="kag.current.setFocusToLink(0, true)"
+	;@eval exp="kag.fore.base.cursorX=(kag.scWidth/2), kag.fore.base.cursorY=360"
+;@endif
 @resetstyle
 @endnowait
 @s
@@ -150,11 +168,11 @@ function scene_getcurlabel(){
 @if exp="scene.scene_load"
 	@eval exp="(Dictionary.assign incontextof f.checklink)(scene.temp_f.checklink)"
 	@eval exp="kag.historyOfStore.assign(scene.temp_f.history)"
-	@eval exp="kag.historyLayer.clear()"
+	@eval exp="kag.historyLayer.load(scene.temp_f.historyData)"
 	@eval exp="kag.saveThumbnail = scene.saveThumbnail"
 	@eval exp="scene.scene_load=0"
 @endif
-;scene.scene_loadが真ならスキップ用にセーブを取る
+;scene.scene_saveが真ならスキップ用にセーブを取る
 ;シナリオが完成したら使う
 ;以後シーンスキップと回想モードが使えるようになる
 @if exp="scene.scene_save"
@@ -179,4 +197,5 @@ function scene_getcurlabel(){
 @eval exp="(Dictionary.assign incontextof scene.temp_f)(f)"
 @eval exp="scene.temp_f.history = []"
 @eval exp="scene.temp_f.history.assign(kag.historyOfStore)"
+@eval exp="scene.temp_f.historyData = kag.historyLayer.save()"
 @eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(tf.target+'.scene'), true)"
