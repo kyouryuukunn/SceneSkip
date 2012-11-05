@@ -131,7 +131,7 @@ function scene_getcurlabel(){
 if(typeof(global.exsystembutton_object) != "undefined" && kag.fore.messages[0].visible)
 	exsystembutton_object.onMessageHiddenStateChanged(true);
 if(typeof(global.MoveMenu_object) != "undefined" && kag.fore.messages[0].visible)
-	tf.move_menuon=0;
+	move_menuon=0;
 @endscript
 @rclick enabled=false
 @history output=false enabled=true
