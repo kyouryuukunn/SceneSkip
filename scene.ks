@@ -128,11 +128,17 @@ function scene_getcurlabel(){
 *Question
 @cm
 @iscript
+//セーブロードを禁止する
 if(typeof(global.exsystembutton_object) != "undefined" && kag.fore.messages[0].visible)
 	exsystembutton_object.onMessageHiddenStateChanged(true);
 if(typeof(global.MoveMenu_object) != "undefined" && kag.fore.messages[0].visible)
-	move_menuon=0;
+	MoveMenu_object.move_menuon=0;
+scene.current_message_back = kag.current.name[9];
 @endscript
+;画面を暗転して質問
+@laycount messages="&kag.numMessageLayers + 1"
+@current layer="&'message' + (kag.numMessageLayers-1)"
+@position layer=message left=0 top=0 width=&kag.scWidth height=&kag.scHeight opacity=255 visible=true
 @rclick enabled=false
 @history output=false enabled=true
 @nowait
@@ -147,12 +153,12 @@ if(typeof(global.MoveMenu_object) != "undefined" && kag.fore.messages[0].visible
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=1"]skip[endlink][r]
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=0"]no[endlink][r]
 [link storage=scene.ks target=*Answer exp="mp.skipAnswer=2"]back[endlink][r]
-;@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
-;	@MoveCursor x="&(kag.scWidth/2)" y=360
-;@else
-@eval exp="kag.current.setFocusToLink(0, true)"
-	;@eval exp="kag.fore.base.cursorX=(kag.scWidth/2), kag.fore.base.cursorY=360"
-;@endif
+@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
+	@MoveCursor x=&kag.scWidth/2 y=&kag.scHeight/2
+@else
+;@eval exp="kag.current.setFocusToLink(0, true)"
+	@eval exp="kag.fore.base.cursorX=kag.scWidth/2, kag.fore.base.cursorY=kag.scHeight/2"
+@endif
 @resetstyle
 @endnowait
 @s
@@ -160,6 +166,18 @@ if(typeof(global.MoveMenu_object) != "undefined" && kag.fore.messages[0].visible
 
 *Answer
 @history output=true enabled=true
+;メッセージレイヤを戻す
+@iscript
+if(typeof(global.MoveMenu_object) != "undefined" && sf.menu_mode == 0)
+	MoveMenu_object.move_menuon=1;
+@endscript
+@current layer="&'message' + scene.current_message_back"
+@laycount messages="&kag.numMessageLayers - 1"
+;メッセージレイヤの濃度を変えていたら修正する
+@if exp="typeof(global.MoveMenu_object) != 'undefined'"
+	@layopt layer=0 page=fore autohide=true index=999999
+	@layopt layer=0 page=back autohide=true index=999999
+@endif
 @return
 
 ;全てのシーンはここを通る
