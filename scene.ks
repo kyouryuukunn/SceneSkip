@@ -10,9 +10,9 @@ if (sf.scene_init === void){
 }
 f.checklink = %[];
 var scene = %[];
-function scene_getcurlabel(){ 
+scene.getcurlabel = function (){ 
 	return kag.conductor.curLabel.indexOf('_') == -1 ? kag.conductor.curLabel.substring(1) : kag.conductor.curLabel.substring(1, kag.conductor.curLabel.indexOf('_')-1);
-}
+} incontextof kag;
 @endscript
 
 
@@ -72,7 +72,7 @@ function scene_getcurlabel(){
 @macro name=scene
 @if exp="sf.checkread[mp.target] != 0"
 	@locate x=%x y=%y
-	@link storage=scene.ks target=*jump_scene exp="&'tf.read_storage=\'' + mp.read_storage + '\', tf.read_target=\'' + mp.read_target + '\', scene.scene_mode=1, tf.target=\'' + mp.target + '\''"
+	@link storage=scene.ks target=*jump_scene exp="&'scene.read_storage=\'' + mp.read_storage + '\', scene.read_target=\'' + mp.read_target + '\', scene.scene_mode=1, scene.target=\'' + mp.target + '\''"
 	@nowait
 	@ch text=%target
 	@endnowait
@@ -90,7 +90,7 @@ function scene_getcurlabel(){
 
 ;フローチャートに戻る
 @macro name=rm
-@eval exp="sf.checkread[scene_getcurlabel()]=1"
+@eval exp="sf.checkread[scene.getcurlabel()]=1"
 @eval exp="mp.storage = f.scene_skip_storage if mp.storage === void"
 @eval exp="mp.target  = f.scene_skip_target  if mp.target === void""
 @jump storage=&f.scene_skip_storage target=&f.scene_skip_target
@@ -100,7 +100,7 @@ function scene_getcurlabel(){
 ;選択済色替え,選択記録
 ;@lk target="" text=""
 @macro name=lk
-@eval exp="sf.checkread[scene_getcurlabel()]=1"
+@eval exp="sf.checkread[scene.getcurlabel()]=1"
 ;バックで戻ってきたときのためにフラグ初期化
 @eval exp="&'f.checklink[\'' + mp.text + '\']=0'"
 @eval exp="mp.storage = kag.conductor.curStorage" cond="mp.storage === void"
@@ -113,17 +113,18 @@ function scene_getcurlabel(){
 @endnowait
 @endlink
 @r
+;メッセージレイヤの余白が分からん
 ;@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
 ;	@eval exp="MouseCursorMover.set(%[layer:kag.fore.messages[0], x:mp.x, y:mp.y, time:300, accel:-4])"
 ;@else
 @eval exp="kag.current.setFocusToLink(0, true)"
 	;@eval exp="kag.fore.base.cursorX=mp.x, kag.fore.base.cursorY=mp.y"
-;@endif
+@endif
 @endmacro
 
 @return
 
-;サブルーチン
+;サブルーチン--------------------------------------------------------------- 
 ;シーンスキップ確認画面
 *Question
 @cm
@@ -156,6 +157,9 @@ scene.current_message_back = kag.current.name[9];
 @if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
 	@MoveCursor x=&kag.scWidth/2 y=&kag.scHeight/2
 @else
+@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
+	@eval exp="MouseCursorMover.set(%[layer:kag.fore.base, x:kag.scWidth/2, y:kag.scHeight/2, time:300, accel:-4])"
+@else
 ;@eval exp="kag.current.setFocusToLink(0, true)"
 	@eval exp="kag.fore.base.cursorX=kag.scWidth/2, kag.fore.base.cursorY=kag.scHeight/2"
 @endif
@@ -180,7 +184,7 @@ if(typeof(global.MoveMenu_object) != "undefined" && sf.menu_mode == 0)
 @endif
 @return
 
-;全てのシーンはここを通る
+;全てのシーンはここを通る--------------------------------------------------- 
 *シーンセーブ用ラベル|
 ;スキップできたらなら変数のつじつまを合わせる
 @if exp="scene.scene_load"
@@ -203,9 +207,9 @@ if(typeof(global.MoveMenu_object) != "undefined" && sf.menu_mode == 0)
  
 @jump storage=&f.scene_storage target=&f.scene_target
 
-;回想モード用
+;回想モード用--------------------------------------------------------------- 
 *jump_scene
-@call storage=&tf.read_storage target=&tf.read_target
+@call storage=&scene.read_storage target=&scene.read_target
 ;シーンロード
 @eval exp="scene.scene_load=1"
 @eval exp="scene.saveThumbnail = kag.saveThumbnail"
@@ -216,4 +220,4 @@ if(typeof(global.MoveMenu_object) != "undefined" && sf.menu_mode == 0)
 @eval exp="scene.temp_f.history = []"
 @eval exp="scene.temp_f.history.assign(kag.historyOfStore)"
 @eval exp="scene.temp_f.historyData = kag.historyLayer.save()"
-@eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(tf.target+'.scene'), true)"
+@eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(scene.target+'.scene'), true)"
