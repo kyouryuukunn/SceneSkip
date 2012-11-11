@@ -87,6 +87,11 @@ scene.getcurlabel = function (){
 	@jump storage=&scene.scene_mode_storage target=&scene.scene_mode_target
 @endif
 @endmacro
+;回想後に戻る場所を設定
+@macro name=scene_back
+@eval exp="scene.scene_mode_storage=mp.storage"
+@eval exp="scene.scene_mode_target=mp.target"
+@endmacro
 
 ;フローチャートに戻る
 @macro name=rm
@@ -169,18 +174,11 @@ scene.current_message_back = kag.current.name[9];
 
 
 *Answer
-@history output=true enabled=true
+;この状態のまま進むのはendだけだろうから
+;戻す必要はないと思う
 ;メッセージレイヤを戻す
-@iscript
-if(typeof(global.MoveMenu_object) != "undefined" && sf.menu_mode == 0)
-	MoveMenu_object.move_menuon=1;
-@endscript
 @current layer="&'message' + scene.current_message_back"
 @laycount messages="&kag.numMessageLayers - 1"
-;メッセージレイヤの濃度を変えていたら修正する
-@if exp="typeof(global.MoveMenu_object) != 'undefined'"
-	@layopt layer=0 page=fore autohide=true index=999999
-	@layopt layer=0 page=back autohide=true index=999999
 @endif
 @return
 
