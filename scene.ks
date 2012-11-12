@@ -196,10 +196,21 @@ scene.current_message_back = kag.current.name[9];
 ;シナリオが完成したら使う
 ;以後シーンスキップと回想モードが使えるようになる
 @if exp="scene.scene_save"
+	;余分なデータを取り除く
+	@eval exp="scene.storeState = kag.historyLayer.storeState"
+	@eval exp="kag.historyLayer.storeState = false"
+	@eval exp="scene.maxHistoryOfStore = kag.maxHistoryOfStore"
+	@eval exp="kag.maxHistoryOfStore = 0"
+	@eval exp="scene.saveDataMode = kag.saveDataMode"
+	@eval exp="kag.saveDataMode = 'z'"
 	@eval exp="scene.saveThumbnail = kag.saveThumbnail"
 	@eval exp="kag.saveThumbnail = false"
 	@eval exp="kag.saveBookMarkToFile(System.exePath + 'data/others/' + f.scene_target.substring(1) + '.scene', true)"
+	;バックアップから戻す
+	@eval exp="kag.historyLayer.storeState = scene.storeState"
 	@eval exp="kag.saveThumbnail = scene.saveThumbnail"
+	@eval exp="kag.saveDataMode = scene.saveDataMode"
+	@eval exp="kag.maxHistoryOfStore = scene.maxHistoryOfStore"
 @endif
 ;タイミングの問題なのか下に空白が必要(1文字だけ先走る)
  
