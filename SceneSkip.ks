@@ -22,7 +22,7 @@ scene.getcurlabel = function (){
 @eval exp="f.scene_skip_storage = mp.skipstorage"
 @eval exp="f.scene_skip_target  = mp.skiptarget"
 @if exp="sf.checkread[mp.target.substring(1)] != 0 && sf.sceneskip == 1 && !scene.scene_mode && !mp.disable"
-	@call storage="scene.ks" target=*Question
+	@call storage="SceneSkip.ks" target=*Question
 	@if exp="mp.skipAnswer==1"
 		@eval exp="f.scene_skip=1"
 		@jump storage=%skipstorage target=%skiptarget
@@ -60,7 +60,7 @@ scene.getcurlabel = function (){
 		@eval exp="kag.loadBookMarkFromFile(Storages.getPlacedPath(kag.conductor.curLabel.substring(1) + '.scene'), true)"
 	@else
 		@eval exp="f.scene_storage=mp.storage, f.scene_target=mp.target"
-		@jump storage=scene.ks target=*シーンセーブ用ラベル
+		@jump storage=SceneSkip.ks target=*シーンセーブ用ラベル
 	@endif
 @endif
 ;何故か進んでしまうのでここで止める
@@ -72,7 +72,7 @@ scene.getcurlabel = function (){
 @macro name=scene
 @if exp="sf.checkread[mp.target] != 0"
 	@locate x=%x y=%y
-	@link storage=scene.ks target=*jump_scene exp="&'scene.read_storage=\'' + mp.read_storage + '\', scene.read_target=\'' + mp.read_target + '\', scene.scene_mode=1, scene.target=\'' + mp.target + '\''"
+	@link storage=SceneSkip.ks target=*jump_scene exp="&'scene.read_storage=\'' + mp.read_storage + '\', scene.read_target=\'' + mp.read_target + '\', scene.scene_mode=1, scene.target=\'' + mp.target + '\''"
 	@nowait
 	@ch text=%target
 	@endnowait
@@ -156,9 +156,9 @@ scene.current_message_back = kag.current.name[9];
 @locate y=250
 @style align=center
 既読シーンです、スキップしますか？[r]
-[link storage=scene.ks target=*Answer exp="mp.skipAnswer=1"]skip[endlink][r]
-[link storage=scene.ks target=*Answer exp="mp.skipAnswer=0"]no[endlink][r]
-[link storage=scene.ks target=*Answer exp="mp.skipAnswer=2"]back[endlink][r]
+[link storage=SceneSkip.ks target=*Answer exp="mp.skipAnswer=1"]skip[endlink][r]
+[link storage=SceneSkip.ks target=*Answer exp="mp.skipAnswer=0"]no[endlink][r]
+[link storage=SceneSkip.ks target=*Answer exp="mp.skipAnswer=2"]back[endlink][r]
 @if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
 	@MoveCursor x=&kag.scWidth/2 y=&kag.scHeight/2
 @else
