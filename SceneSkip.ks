@@ -118,12 +118,10 @@ scene.getcurlabel = function (){
 @endnowait
 @endlink
 @r
-;メッセージレイヤの余白が分からん
-;@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
-;	@eval exp="MouseCursorMover.set(%[layer:kag.fore.messages[0], x:mp.x, y:mp.y, time:300, accel:-4])"
-;@else
-@eval exp="kag.current.setFocusToLink(0, true)"
-	;@eval exp="kag.fore.base.cursorX=mp.x, kag.fore.base.cursorY=mp.y"
+@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
+	@eval exp="MouseCursorMover.set(%[layer:kag.fore.messages[0], x:(int)mp.x + kag.fore.messages[kag.current.name[9]].marginL + kag.fore.messages[kag.current.name[9]].left + 10, y:(int)mp.y + kag.fore.messages[kag.current.name[9]].marginT + kag.fore.messages[kag.current.name[9]].top + 10, time:300, accel:-4])"
+@else
+	@eval exp="kag.fore.base.cursorX = (int)mp.x + kag.fore.messages[kag.current.name[9]].marginL + kag.fore.messages[kag.current.name[9]].left + 10, kag.fore.base.cursorY = (int)mp.y + kag.fore.messages[kag.current.name[9]].marginT + kag.fore.messages[kag.current.name[9]].top + 10"
 @endif
 @endmacro
 
@@ -160,13 +158,9 @@ scene.current_message_back = kag.current.name[9];
 [link storage=SceneSkip.ks target=*Answer exp="mp.skipAnswer=0"]no[endlink][r]
 [link storage=SceneSkip.ks target=*Answer exp="mp.skipAnswer=2"]back[endlink][r]
 @if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
-	@MoveCursor x=&kag.scWidth/2 y=&kag.scHeight/2
+	@eval exp="MouseCursorMover.set(%[layer:kag.fore.messages[0], x:kag.scWidth/2, y:250 + kag.fore.messages[kag.current.name[9]].marginT + 50, time:300, accel:-4])"
 @else
-@if exp="typeof(global.MoveMouseCursorPlugin_object) != 'undefined'"
-	@eval exp="MouseCursorMover.set(%[layer:kag.fore.base, x:kag.scWidth/2, y:kag.scHeight/2, time:300, accel:-4])"
-@else
-;@eval exp="kag.current.setFocusToLink(0, true)"
-	@eval exp="kag.fore.base.cursorX=kag.scWidth/2, kag.fore.base.cursorY=kag.scHeight/2"
+	@eval exp="kag.fore.base.cursorX = kag.scWidth/2, kag.fore.base.cursorY = 250 + kag.fore.messages[kag.current.name[9]].marginT + 50"
 @endif
 @resetstyle
 @endnowait
